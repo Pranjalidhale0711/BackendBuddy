@@ -1,0 +1,13 @@
+{
+  "ignore": [
+    "permissions.js",
+    "preet.js",
+    "newcheckSchema.js",
+    "userSchema.js",
+    "preetSchema.js",
+    "rutwikSchema.js",
+    "loginSchema.js",
+    "login.js",
+    "rutwik.js"
+  ]
+}

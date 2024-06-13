@@ -29,6 +29,7 @@ const register = async (req, res) => {
     const profile = await Profile.find({ email: email });
     if (profile.length) {
         res.status(400).json({ message: "Already Registered, Please Log in" });
+        return;
     }
 
     //adding pepper to password
@@ -38,13 +39,12 @@ const register = async (req, res) => {
     const hashedPassword = await bcrypt.genSalt(10).then(salt => bcrypt.hash(newPassword, salt))
 
     //storing in database
-    Profile.create({ email: email, password: hashedPassword, userName: userName }).then(() => {
+    Profile.create({ email: email, password: hashedPassword, userName: userName, projects:[]}).then(() => {
         return res.status(200).json({ message: "Registered successfully" })
     }).catch((error) => {
         console.log("error is", error)
         res.status(500).json({ message: "Something went wrong, please try again" });
         return;
-
     })
 }
 const login = async (req, res) => {
@@ -80,7 +80,8 @@ const login = async (req, res) => {
     // Generate JWT token
     const token = jwt.sign({
         id: profile._id,
-        email: profile.email
+        email: profile.email,
+        userName:profile.userName
     },
         process.env.JWT_SECRET,
         { expiresIn: '1h' }
@@ -90,7 +91,13 @@ const login = async (req, res) => {
 
 }
 
+const fetchUser = async(req,res) =>{
+    console.log("came in fetch user controller", req.access_token);
+    res.status(200).json({message:req.access_token});
+}
+
 module.exports = {
     register,
-    login
+    login,
+    fetchUser
 };

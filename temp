@@ -1,0 +1,65 @@
+[
+    {
+        "fieldName": "Newest",
+        "isRequired": true,
+        "isUnique": false,
+        "dataType": "Array",
+        "content": [
+            {
+                "fieldName": "field1",
+                "isRequired": false,
+                "isUnique": false,
+                "dataType": "String"
+            },
+            {
+                "fieldName": "field1nest",
+                "isRequired": false,
+                "isUnique": false,
+                "dataType": "Array",
+                "content": [
+                    {
+                        "fieldName": "field3",
+                        "isRequired": false,
+                        "isUnique": false,
+                        "dataType": "Array",
+                        "content": [
+                            {
+                                "fieldName": "fields4",
+                                "isRequired": false,
+                                "isUnique": false,
+                                "dataType": "Array",
+                                "content": [
+                                    {
+                                        "fieldName": "final",
+                                        "isRequired": false,
+                                        "isUnique": false,
+                                        "dataType": "Date"
+                                    },
+                                    {
+                                        "fieldName": "finlafinal",
+                                        "isRequired": false,
+                                        "isUnique": false,
+                                        "dataType": "Boolean"
+                                    },
+                                    {
+                                        "fieldName": "last",
+                                        "isRequired": false,
+                                        "isUnique": false,
+                                        "dataType": "Decimal128"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "fieldName": "second",
+        "isRequired": false,
+        "isUnique": true,
+        "dataType": "String",
+        "content": ""
+    }
+]
