@@ -1,0 +1,21 @@
+const express = require('express');
+const router = express.Router();
+const {createProject,deleteProject,addPermission,deletePermission, addRole,deleteRole, addSchema, deleteSchema, submit}=require("../controllers/projectServices_controller");
+const checkAuthorization =require("../middlewares/authenticate");
+
+
+router.post("/createProject",checkAuthorization,createProject);
+router.post("/deleteProject",checkAuthorization,deleteProject);
+router.post("/addPermission",checkAuthorization,addPermission);
+router.post("/deletePermission",checkAuthorization,deletePermission);
+router.post("/addRole",checkAuthorization,addRole);
+router.post("/deleteRole",checkAuthorization,deleteRole);
+router.post("/addSchema",checkAuthorization,addSchema);
+router.post("/deleteSchema",checkAuthorization,deleteSchema);
+router.get("/download/:projectId",checkAuthorization,submit);
+
+module.exports= router;
+
+
+
+
