@@ -56,6 +56,9 @@ console.log("entered here");
       return;
     });
 };
+const fetchUser = (req, res) => {
+  res.status(200).json({ message: req.decoded_token });
+};
 
 const login = async (req, res) => {
   const { email, password } = req.body;
@@ -145,4 +148,5 @@ module.exports = {
   login,
   addProject,
   deleteProject,
+  fetchUser
 };

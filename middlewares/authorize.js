@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 
  const checkAuthorization = async (req, res, next) => {
   const token = req.headers["authorization"];
-
+   console.log("herre",token);
   if (token == null || !token || token == undefined) {
     res.status(403).send({ message: "Something went wrong" });
     return;
