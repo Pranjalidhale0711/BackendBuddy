@@ -1,0 +1,78 @@
+.footer {
+  background-color: rgb(18, 18, 18);
+  color: rgb(160, 160, 160);
+  padding: 60px 0;
+  overflow-x: hidden;
+}
+
+.footer a {
+  text-decoration: none;
+  color: rgb(160, 160, 160);
+  transition: color 0.3s;
+}
+
+.footer a:hover {
+  color: white;
+}
+
+.footer-heading {
+  margin-bottom: 25px;
+}
+
+.footer-heading a {
+  color: white;
+  font-family: 'Poppins', sans-serif;
+  font-size: 1em;
+  font-weight: 700;
+}
+
+.menu a {
+  margin: 0 15px;
+  font-size: 1em;
+  font-weight: 400;
+}
+
+.footer-social {
+  list-style: none;
+  margin-top: 25px;
+}
+
+.footer-social li {
+  display: inline-block;
+  margin: 0 10px;
+}
+
+.footer-social a {
+  color: rgb(160, 160, 160);
+  font-size: 1.5em;
+  transition: color 0.3s;
+}
+
+.footer-social a:hover {
+  color: white;
+}
+
+.social-animate a {
+  position: relative;
+  display: inline-block;
+  transition: all 0.3s ease-in-out;
+}
+
+.social-animate a:hover {
+  transform: translateY(-5px);
+}
+
+.copyright {
+  font-size: 0.9em;
+  color: rgb(160, 160, 160);
+}
+
+.copyright a {
+  color: white;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.copyright a:hover {
+  color: rgb(160, 160, 160);
+}
