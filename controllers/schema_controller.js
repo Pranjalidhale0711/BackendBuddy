@@ -5,7 +5,8 @@ const axios=require("axios");
 dotenv.config();
 
 const createSchema=async(req,res)=>{
-    const {name,fields,projectId}=req.body;
+    const { projectId } = req.params;
+    const { name, fields } = req.body;
     const token = req.headers['authorization'];
     if (!projectId || projectId == null || projectId == undefined) {
         return res.status(401).json({ message: "need Project ID" })
@@ -50,21 +51,24 @@ const createSchema=async(req,res)=>{
 
 
 const deleteSchema=async(req,res)=>{
-const {schemaId,projectId,name}=req.body;
+
+const {projectId,schemaId}=req.params;
 const token = req.headers['authorization'];
 if (!projectId || projectId == null || projectId == undefined) {
     return res.status(401).json({ message: "need Project ID" })
 }
 if (!schemaId || schemaId == null || schemaId == undefined) {
     return res.status(401).json({ message: "Need Schema ID" });
-}
+} 
+const schema = await Schema.findById(schemaId);
+const name=schema.name;
 try{
     const getSchema=await Schema.findById(schemaId);
     if(getSchema==null||getSchema==undefined)
     {
         res.status(500).json({message:"something went wrong"});
     }
-    await SchemaDefine.deleteOne({ _id: schemaId });
+    await Schema.deleteOne({ _id: schemaId });
     try{
            
         console.log(process.env.PROJ_SERVICE_URL);
@@ -92,7 +96,8 @@ try{
 
 
 const updateSchema=async(req,res)=>{
-    const {fields,schemaId}=req.body;
+    const {fields}=req.body;
+    const {schemaId}=req.params;
     if (!schemaId || schemaId == null || schemaId == undefined) {
         return res.status(401).json({ message: "Need Schema ID" });
     }
@@ -117,7 +122,20 @@ const updateSchema=async(req,res)=>{
 
 }
 
-
+const getSchemaInfo=async(req,res)=>{
+    try {
+        const {schemaId} =  req.params;
+        const schema = await Schema.findById(schemaId);
+        if(schema){
+            return res.status(200).json({message: "OK", schema: schema});
+        }else {
+            return res.status(500).json({message: "something went wrong!"});
+        }
+    } catch (error) {
+        console.log("can't fetch schema info", error);
+        return res.status(500).json({ message: "Something went wrong" });
+    }
+}
 const getSchemas=async(req,res)=> {
     const {schemaIds}=req.body;
     console.log(schemaIds);
@@ -140,7 +158,20 @@ const getSchemas=async(req,res)=> {
     }
 }
 
-
+const getAllSchemas = async (req, res) => {
+    try {
+        const { projectId } = req.params;
+        const schemas = await Schema.find({ projectId: projectId });
+        if(schemas) {
+            return res.status(200).json({message: "OK", schemas: schemas});
+        } else {
+            return res.status(500).json({message: "something went wrong!"});
+        }
+    } catch (error) {
+        console.log("can't fetch all schemas", error);
+        return res.status(500).json({ message: "Something went wrong" });
+    }
+}
 
 
 
@@ -148,5 +179,7 @@ module.exports={
 createSchema,
 deleteSchema,
 updateSchema,
-getSchemas
+getSchemas,
+getAllSchemas,
+getSchemaInfo
 }
