@@ -35,7 +35,7 @@ async function generateSchemaFiles(schemas) {
     makeSchema(schema, modelDirectory);
   });
 
-
+console.log("iside end of schema");
   return { parentDirectory };
 }
 
@@ -47,8 +47,7 @@ function makeSchema(schema, directory) {
   schemaCode += schemaString(schema)
   schemaCode += `});\n\n`;
   schemaCode += `module.exports = mongoose.model('${schema.name}', ${schema.name}Schema);\n`;
-
-
+  
   fs.writeFileSync(schemaFilePath, schemaCode);
 }
 function schemaString(schema) {
@@ -87,6 +86,7 @@ function addContent(content) {
       schemaCode += `}\n]\n,\n`
     }
   })
+  console.log("inseide make sachema")
   return schemaCode;
 }
 
@@ -137,6 +137,8 @@ const schema = new mongoose.Schema({
     }
 })
 module.exports = mongoose.model("Profile", schema);`
+
+console.log("heeereee after models is made")
   const schemaFilePath = path.join(modelDirectory, "profile.js");
   fs.writeFileSync(schemaFilePath, profileCode);
 

@@ -137,6 +137,33 @@ const deletePermission = async (req, res) => {
 };
 
 
+const getAllPermisisons = async (req, res) => {
+
+  try {
+      const { projectId } = req.params;
+      console.log("project id is", projectId);
+      if (projectId == null || projectId == undefined || !projectId) {
+          return res.status(401).json({ message: "need project id" })
+      }
+      //finding project
+      const project = await Project.findById(projectId);
+      if (!project || project == null || project == undefined) {
+          return res.status(401).json({ message: "Project not found" })
+      }
+
+      return res.status(200).json({ message: "OK", permissions: project.permissions })
+  } catch (error) {
+      console.log("error occured in getAllPermisisons controller", error);
+
+      return res.status(500).json({ message: "Something went wrong" })
+
+  }
+
+}
+
+
+
+
 const addRole = async (req, res) => {
   const { roleId, isRestricted, name, projectId } = req.body;
   console.log("role id is ",projectId);
@@ -258,26 +285,111 @@ const deleteSchema=async(req,res)=>{
     return res.status(500).json({ message: "Internal error" });
   }
 }
+
+const getAllProjects = async (req, res) => {
+  try {
+      const userId = req.access_token.id;
+      const query = { userId: userId };
+      const projects = await Project.find(query);
+      if (projects) {
+          return res.status(200).json({ message: "Ok", projects: projects });
+      }
+      else {
+          return res.status(500).json({ message: "Something went wrong" });
+
+      }
+  } catch (error) {
+      console.log("error in getAllProjects controller", error);
+      return res.status(500).json({ message: "Something went wrong" });
+
+  }
+
+}
+
+
+
+
+const getProjectInfo = async (req, res) => {
+    try {
+        const projectId = req.params.projectId;
+        const token = req.headers['authorization'];
+        if (!projectId) {
+            return res.status(500).json({ message: "Need project Id" });
+        }
+
+        console.log("projectId is", projectId);
+        const project = await Project.findById(projectId);
+        if (!project) {
+            return res.status(404).json({ message: "Project not found" });
+        }
+
+        // console.log("project found:", project.roles);
+        let rolesInfo;
+        try {
+            rolesInfo = await axios.post("http://localhost:8022/api/v1/getRole", {
+                roles: project.roles
+            }, {
+                headers: {
+                    Authorization: token,
+                }
+            });
+        } catch (error) {
+            console.log("error in role service", error);
+            return res.status(500).json({ message: "Something went wrong in communicating with role_service", error });
+        }
+        console.log("roles areee",rolesInfo.data.roleDetails);
+       
+       
+       
+        let schemaInfo;
+        try {
+            schemaInfo = await axios.get(`http://localhost:8023/api/v1/getAllSchemas/${projectId}`, {
+                headers: {
+                    Authorization: token,
+                }
+            }); 
+        } catch (error) {
+            console.log("error in Schema service", error);
+            return res.status(500).json({ message: "Something went wrong in communicating with schema_service", error }); 
+        }
+
+        console.log("Schemainfo is", schemaInfo.data.schemas);
+
+        // Optionally save the updated project if you want to persist the changes
+        // await project.save();
+
+        return res.status(200).json({ message: "Ok", project:project, roles:rolesInfo.data.roleDetails,schemas:schemaInfo.data.schemas });
+    } catch (error) {
+        console.log("error occurred in getProjectInfo controller", error);
+        return res.status(500).json({ message: "Something went wrong", error });
+    }
+};
+
+
+
 const makeControllers = async (schemas) => {
 
   schemas.map(async (schema) => {
       await generateControllers(schema);
   });
 };
+
+
+
 const submit=async(req,res)=>{
   const user = await req.access_token;
    const token = req.headers['authorization'];
    const projectId = req.params.projectId;
    const project = await Project.findById(projectId);
-  //  console.log(project);
+   console.log("eeeeeeeee",project);
   let schemas = project.schemas;
   let roles = project.roles;
-  // console.log(token);
+  console.log(token);
   try{
     console.log(process.env.ROLE_SERVICE_URL);
     try {
-      const res = await axios.post(`${process.env.ROLE_SERVICE_URL}/getRole`, {
-         roleIds:roles
+      const res = await axios.post("http://localhost:8022/api/v1/getRole", {
+         roles:roles
       }, {
           headers: { Authorization: token }
       });
@@ -286,8 +398,9 @@ const submit=async(req,res)=>{
       
   } catch (error) {
       console.log("Error in role service", error);
-      return done(new Error("Error communicating with role service"));
+      return ("Error communicating with role service",error);
   }
+  console.log("here ",process.env.SCHEMA_SERVICE_URL,)
   try {
     const res = await axios.post(`${process.env.SCHEMA_SERVICE_URL}/getSchemas`, {
        schemaIds:schemas
@@ -295,12 +408,14 @@ const submit=async(req,res)=>{
         headers: { Authorization: token }
     });
     schemas = res.data.schemaDetails;
-  } catch (error) {
+  }
+   catch (error) {
     console.log("Error in schema service", error);
     return done(new Error("Error communicating with schema service"));
   }
   console.log(schemas);
   await generateSchemaFiles(schemas);
+  console.log("out from schemas")
   await makeControllers(schemas);
   await generateRoutes(schemas);
   await generatePermissions(project.permissions, roles, project.restrictedRoles);
@@ -322,7 +437,7 @@ const submit=async(req,res)=>{
     repoName=createdRepoName
     githubUrl = createdGithubUrl;
     console.log(repoName);
-    console.log(githubUrl)
+    console.log(githubUrl);
   }
   else{
     alreadyCreated=true;
@@ -347,9 +462,9 @@ const submit=async(req,res)=>{
 
       for (const command of gitCommands) {
           const { stdout, stderr } = await execAsync(command, { cwd: exactPath });
-          console.log('Command:', command);
-          console.log('stdout:', stdout);
-          console.error('stderr:', stderr);
+          // console.log('Command:', command);
+          // console.log('stdout:', stdout);
+          // console.error('stderr:', stderr);
       }
       
       if(!alreadyCreated){
@@ -397,6 +512,27 @@ const submit=async(req,res)=>{
 }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 module.exports = {
   createProject,
   deleteProject,
@@ -406,7 +542,10 @@ module.exports = {
   deleteRole,
   addSchema,
   deleteSchema,
-  submit
+  submit,
+  getAllProjects,
+  getProjectInfo,
+  getAllPermisisons
 };
 
 

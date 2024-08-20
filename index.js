@@ -18,7 +18,10 @@ mongoose.connect("mongodb://localhost:27017/pranjalibackendbuddy").then(()=>{
 //using middlewares
 app.use(express.json());
 
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:3000',
+  credentials: true,
+}));
 app.use("/api/v1", projectRoutes);
 
 //running server
