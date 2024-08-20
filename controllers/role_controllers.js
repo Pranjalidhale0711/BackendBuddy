@@ -5,7 +5,8 @@ const axios = require("axios");
 dotenv.config();
 
 const addRole = async (req, res) => {
-  const { name, projectId, permissions, isRestricted } = req.body;
+  const {projectId}=req.params;
+    const { name, permissions, isRestricted } = req.body;
   if (!projectId || projectId == null || projectId == undefined) {
     return res.status(401).json({ message: "need Project ID" });
   }
@@ -48,10 +49,11 @@ const addRole = async (req, res) => {
 };
 
 const deleteRole = async (req, res) => {
-    const { name,roleId,projectId } = req.body;
+    const {roleId,projectId } = req.body;
     if (!roleId || roleId == null || roleId == undefined || projectId==null) {
         return res.status(401).json({ message: "need Project ID" });
     }
+    const name = await Role.findById(roleId);
     if (!name || name == null || name == undefined) {
         return res.status(401).json({ message: "need name" });
     }
@@ -84,6 +86,7 @@ const deleteRole = async (req, res) => {
     }
   };
 
+
 const updateRole=async(req,res)=>{
     const {name,permissions,roleId}=req.body;
     try{
@@ -109,17 +112,16 @@ const updateRole=async(req,res)=>{
     {
         return res.status(500).json({message:"There is error"});
     }
-   
-
-}
+  };
 
 const getRole=async(req,res)=>{
-  const {roleIds}=req.body;
-  console.log(roleIds);
+  const {roles}=req.body;
+  console.log(roles);
   const allRolesDetails=[];
   try{
     await Promise.all(
-      roleIds?.map(async (role) => {
+      roles?.map(async (role) => {
+        console.log(role);
           const roleInfo = await Role.findById(role);
           if (roleInfo != undefined && roleInfo != null && roleInfo) {
               allRolesDetails.push(roleInfo);
